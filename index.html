@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Countdown per 27 ottobre</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Roboto, "Helvetica Neue", Arial; display:flex; align-items:center; justify-content:center; min-height:100vh; background:#f6f8fa; margin:0; }
+    .card { background:white; padding:24px 32px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.08); text-align:center; }
+    h1 { margin:0 0 12px 0; font-size:20px; }
+    .time { font-size:28px; letter-spacing:0.5px; }
+    .units { font-size:13px; color:#666; margin-top:8px; }
+    .small { font-size:13px; color:#888; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <div class="card" role="region" aria-live="polite" aria-label="Countdown al 27 ottobre">
+    <h1>Tempo rimanente al 27 ottobre</h1>
+    <div id="countdown" class="time">-- giorni --:--:--</div>
+    <div class="units">gg hh:mm:ss</div>
+    <div id="message" class="small" aria-hidden="true"></div>
+  </div>
+
+  <script>
+    (function () {
+      function pad(n){ return n.toString().padStart(2,'0'); }
+
+      // target: 27 ottobre, ora 00:00:00 locale
+      function getTargetDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        // monthIndex 9 = ottobre (0 = gennaio)
+        let target = new Date(year, 9, 27, 0, 0, 0, 0);
+        // se già passato oggi, usa l'anno successivo
+        if (now >= target) target = new Date(year + 1, 9, 27, 0, 0, 0, 0);
+        return target;
+      }
+
+      const target = getTargetDate();
+      const display = document.getElementById('countdown');
+      const message = document.getElementById('message');
+
+      function update() {
+        const now = new Date();
+        const diff = target - now; // millisecondi
+
+        if (diff <= 0) {
+          display.textContent = "00 giorni 00:00:00";
+          message.textContent = "È arrivato il 27 ottobre!";
+          return clearInterval(timerId);
+        }
+
+        const totalSec = Math.floor(diff / 1000);
+        const sec = totalSec % 60;
+        const totalMin = Math.floor(totalSec / 60);
+        const min = totalMin % 60;
+        const totalHours = Math.floor(totalMin / 60);
+        const hours = totalHours % 24;
+        const days = Math.floor(totalHours / 24);
+
+        display.textContent = `${days} giorni ${pad(hours)}:${pad(min)}:${pad(sec)}`;
+        // aggiorna anche aria-hidden message per lettori di schermo se vuoi
+        message.textContent = `Manca ${days} giorni, ${hours} ore, ${min} minuti e ${sec} secondi.`;
+      }
+
+      update(); // prima visualizzazione immediata
+      const timerId = setInterval(update, 1000);
+    })();
+  </script>
+</body>
+</html>
